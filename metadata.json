@@ -1,0 +1,6 @@
+{
+  "name": "Jijamata Gruh Udyog",
+  "description": "Authentic homemade traditional food products by women's Self-Help Group (SHG) from Nashik, Maharashtra.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
