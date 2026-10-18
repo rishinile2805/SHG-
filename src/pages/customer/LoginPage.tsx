@@ -17,6 +17,7 @@ export const LoginPage: React.FC = () => {
     logoutCustomer,
     setRole,
     navigateTo,
+    adminLogin,
     showToast,
     t
   } = useApp();
@@ -25,28 +26,24 @@ export const LoginPage: React.FC = () => {
   const [mobileOrEmail, setMobileOrEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleCustomerSubmit = (e: React.FormEvent) => {
+  const handleCustomerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    loginCustomer(mobileOrEmail || 'user@example.com', 'Registered Customer');
+    await loginCustomer(mobileOrEmail || 'rajesh.kulkarni@gmail.com', 'Registered Customer', password || 'Customer@123');
     navigateTo('customer-dashboard');
   };
 
-  const handleAdminSubmit = (e: React.FormEvent) => {
+  const handleAdminSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setRole('admin');
-    showToast('Logged into Jijamata SHG Admin Portal', 'success');
-    navigateTo('admin-dashboard');
+    await adminLogin(mobileOrEmail || 'admin@jijamata.org', password || 'Jijamata@Nashik2026');
   };
 
-  const handleDemoCustomerLogin = () => {
-    loginCustomer('sunita.ranade@gmail.com', 'Sunita Ranade');
+  const handleDemoCustomerLogin = async () => {
+    await loginCustomer('rajesh.kulkarni@gmail.com', 'Rajesh Kulkarni', 'Customer@123');
     navigateTo('customer-dashboard');
   };
 
-  const handleDemoAdminLogin = () => {
-    setRole('admin');
-    showToast('Switched to Admin Role for Jijamata SHG', 'success');
-    navigateTo('admin-dashboard');
+  const handleDemoAdminLogin = async () => {
+    await adminLogin('admin@jijamata.org', 'Jijamata@Nashik2026');
   };
 
   return (

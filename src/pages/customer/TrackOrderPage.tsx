@@ -11,40 +11,56 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { OrderStatus } from '../../types';
+import { api } from '../../services/api';
 
 export const TrackOrderPage: React.FC = () => {
   const { orders, selectedOrderId, t } = useApp();
 
-  const [searchQuery, setSearchQuery] = useState(selectedOrderId || 'JJ-2026-102');
+  const [searchQuery, setSearchQuery] = useState(selectedOrderId || 'JGU-8942');
   const [activeOrder, setActiveOrder] = useState<any>(null);
   const [searched, setSearched] = useState(false);
 
   useEffect(() => {
-    if (selectedOrderId) {
-      const match = orders.find((o) => o.id === selectedOrderId);
-      if (match) {
-        setActiveOrder(match);
-        setSearchQuery(match.id);
-        setSearched(true);
-      }
+    const targetId = selectedOrderId || 'JGU-8942';
+    const match = orders.find((o) => o.id === targetId);
+    if (match) {
+      setActiveOrder(match);
+      setSearchQuery(match.id);
+      setSearched(true);
     } else {
-      // Default to JJ-2026-102 (which is In Transit)
-      const defaultOrder = orders.find((o) => o.id === 'JJ-2026-102') || orders[0];
-      if (defaultOrder) {
-        setActiveOrder(defaultOrder);
-        setSearchQuery(defaultOrder.id);
-        setSearched(true);
-      }
+      api.trackOrder(targetId)
+        .then((ord) => {
+          if (ord) {
+            setActiveOrder(ord);
+            setSearchQuery(ord.id);
+            setSearched(true);
+          }
+        })
+        .catch(() => {
+          if (orders[0]) {
+            setActiveOrder(orders[0]);
+            setSearchQuery(orders[0].id);
+            setSearched(true);
+          }
+        });
     }
   }, [selectedOrderId, orders]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setSearched(true);
     const query = searchQuery.trim().toUpperCase();
-    const match = orders.find(
+    let match = orders.find(
       (o) => o.id.toUpperCase() === query || o.customerPhone.includes(query)
     );
+    if (!match && query) {
+      try {
+        const remoteOrder = await api.trackOrder(query);
+        if (remoteOrder) match = remoteOrder;
+      } catch (err) {
+        // Not found
+      }
+    }
     setActiveOrder(match || null);
   };
 
